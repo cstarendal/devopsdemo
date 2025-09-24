@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - main
-      - 'test/**'
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      default_env:
+        description: "Default environment at root (/): production|staging|test"
+        required: false
+        default: staging
 
 permissions:
   contents: read
@@ -83,13 +86,24 @@ jobs:
               awk -v base="$BASE_VAR" '{print} NR==1{next} /<head>/ && !done {print "    <base href=\"" base "\">"; done=1}1' "$target/index.html" > "$tmpfile" && mv "$tmpfile" "$target/index.html"
             fi
           done
-          if [[ "${{ startsWith(github.ref, 'refs/tags/v') }}" == "true" ]]; then
-            echo "Production default"
-          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/staging/\">" > pages/index.html
-          else
-            echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/test/\">" > pages/index.html
-          fi
+          # Determine default env for root redirect
+          DEFAULT_ENV="${{ github.event.inputs.default_env }}"
+          [[ -z "$DEFAULT_ENV" ]] && DEFAULT_ENV=staging
+          case "$DEFAULT_ENV" in
+            production)
+              # keep prod at root; do not overwrite index.html copied from prod
+              :
+              ;;
+            staging)
+              echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/staging/\">" > pages/index.html
+              ;;
+            test)
+              echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/test/\">" > pages/index.html
+              ;;
+            *)
+              echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/staging/\">" > pages/index.html
+              ;;
+          esac
           # Ensure GitHub Pages doesn't run Jekyll and SPA fallback works
           touch pages/.nojekyll
           cp pages/index.html pages/404.html || true
@@ -103,10 +117,9 @@ jobs:
 
   deploy:
     needs: build-and-test
-    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/test/') || startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     environment:
-      name: ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || (github.ref == 'refs/heads/main' && 'staging' || 'test') }}
+      name: pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
