@@ -88,24 +88,10 @@ jobs:
               awk -v base="$BASE_VAR" '{print} NR==1{next} /<head>/ && !done {print "    <base href=\"" base "\">"; done=1}1' "$target/index.html" > "$tmpfile" && mv "$tmpfile" "$target/index.html"
             fi
           done
-          # Determine default env for root redirect
-          DEFAULT_ENV="${{ github.event.inputs.default_env }}"
-          [[ -z "$DEFAULT_ENV" ]] && DEFAULT_ENV=staging
-          case "$DEFAULT_ENV" in
-            production)
-              # keep prod at root; do not overwrite index.html copied from prod
-              :
-              ;;
-            staging)
-              echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/staging/\">" > pages/index.html
-              ;;
-            test)
-              echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/test/\">" > pages/index.html
-              ;;
-            *)
-              echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/staging/\">" > pages/index.html
-              ;;
-          esac
+          # Always open staging at root and under /production for demo clarity
+          echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/staging/\">" > pages/index.html
+          mkdir -p pages/production
+          echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/staging/\">" > pages/production/index.html
           # Ensure GitHub Pages doesn't run Jekyll and SPA fallback works
           touch pages/.nojekyll
           cp pages/index.html pages/404.html || true
