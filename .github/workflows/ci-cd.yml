@@ -41,6 +41,9 @@ jobs:
 
       - name: Build production
         run: |
+          # Ensure a clean TypeScript build (avoid stale build info)
+          npx tsc --build --clean || true
+          rm -rf node_modules/.tmp dist || true
           REPO_NAME="${{ github.event.repository.name }}"
           export VITE_BASE_PATH="/${REPO_NAME}/"
           export VITE_ENV_NAME="Production"
