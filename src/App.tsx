@@ -3,7 +3,7 @@ import './App.css'
 
 function App() {
   const [isOn, setIsOn] = useState(false)
-  const envName = (import.meta as any).env?.VITE_ENV_NAME || 'Local'
+  const envName = import.meta.env.VITE_ENV_NAME ?? 'Local'
 
   return (
     <div>
