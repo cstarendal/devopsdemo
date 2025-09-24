@@ -29,21 +29,17 @@ function App() {
       <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
         <div style={{ textAlign: 'center', paddingTop: 80 }}>
           <h1>Hello World</h1>
-          {/* New Feature area */}
-          <div style={{ marginTop: 24 }}>
-            <div style={{ fontSize: 18, marginBottom: 8 }}>
-              New Feature: {newFeatureOn ? 'ON' : 'OFF'}
-            </div>
-            {canToggleFeatures ? (
+          {/* New Feature area (Production only UI) */}
+          {canToggleFeatures && (
+            <div style={{ marginTop: 24 }}>
+              <div style={{ fontSize: 18, marginBottom: 8 }}>
+                New Feature: {newFeatureOn ? 'ON' : 'OFF'}
+              </div>
               <button onClick={handleToggleFeature}>
                 {newFeatureOn ? 'Disable' : 'Enable'} new features (prod only)
               </button>
-            ) : (
-              <div style={{ fontSize: 12, color: '#6b7280' }}>
-                In {envName}, new features are always ON
-              </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Smiley feature */}
           {canToggleFeatures && (
