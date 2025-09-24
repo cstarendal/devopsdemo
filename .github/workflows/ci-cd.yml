@@ -46,18 +46,21 @@ jobs:
         run: |
           REPO_NAME="${{ github.event.repository.name }}"
           export VITE_BASE_PATH="/${REPO_NAME}/"
+          export VITE_ENV_NAME="Production"
           npm run build -- --outDir dist/prod
 
       - name: Build staging
         run: |
           REPO_NAME="${{ github.event.repository.name }}"
           export VITE_BASE_PATH="/${REPO_NAME}/staging/"
+          export VITE_ENV_NAME="Staging"
           npm run build -- --outDir dist/staging
 
       - name: Build test
         run: |
           REPO_NAME="${{ github.event.repository.name }}"
           export VITE_BASE_PATH="/${REPO_NAME}/test/"
+          export VITE_ENV_NAME="Test"
           npm run build -- --outDir dist/test
 
       - name: Compose Pages artifact
