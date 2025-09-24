@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       default_env:
@@ -56,6 +59,7 @@ jobs:
           echo "Skipping building public test site; tests already ran in unit stage."
 
       - name: Compose Pages artifact
+        if: ${{ github.event_name == 'push' }}
         run: |
           mkdir -p pages
           rsync -a dist/prod/ pages/
@@ -84,6 +88,7 @@ jobs:
           if [[ -f pages/production/index.html ]]; then cp pages/production/index.html pages/production/404.html; fi
 
       - name: Upload artifact
+        if: ${{ github.event_name == 'push' }}
         uses: actions/upload-pages-artifact@v3
         with:
           path: pages
@@ -114,6 +119,7 @@ jobs:
         run: npm run test:run
 
   promote-to-staging:
+    if: ${{ github.event_name == 'push' }}
     needs: run-testing
     runs-on: ubuntu-latest
     environment:
@@ -123,6 +129,7 @@ jobs:
         run: echo "Staging gate passed"
 
   deploy:
+    if: ${{ github.event_name == 'push' }}
     needs: promote-to-staging
     runs-on: ubuntu-latest
     environment:
