@@ -1,0 +1,95 @@
+name: ci-cd
+
+on:
+  push:
+    branches:
+      - main
+      - 'test/**'
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test:run
+
+      - name: Build production
+        run: |
+          export VITE_BASE_PATH=/
+          npm run build -- --outDir dist/prod
+
+      - name: Build staging
+        run: |
+          export VITE_BASE_PATH=/staging/
+          npm run build -- --outDir dist/staging
+
+      - name: Build test
+        run: |
+          export VITE_BASE_PATH=/test/
+          npm run build -- --outDir dist/test
+
+      - name: Compose Pages artifact
+        run: |
+          mkdir -p pages
+          rsync -a dist/prod/ pages/
+          mkdir -p pages/staging pages/test
+          rsync -a dist/staging/ pages/staging/
+          rsync -a dist/test/ pages/test/
+          if [[ "${{ startsWith(github.ref, 'refs/tags/v') }}" == "true" ]]; then
+            echo "Production default"
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            cat > pages/index.html <<'HTML'
+            <!doctype html><meta http-equiv="refresh" content="0; url=/staging/">
+            HTML
+          else
+            cat > pages/index.html <<'HTML'
+            <!doctype html><meta http-equiv="refresh" content="0; url=/test/">
+            HTML
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: pages
+
+  deploy:
+    needs: build-and-test
+    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/test/') || startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || (github.ref == 'refs/heads/main' && 'staging' || 'test') }}
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+
