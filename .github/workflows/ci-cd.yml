@@ -97,17 +97,8 @@ jobs:
         with:
           path: pages
 
-  promote-to-test:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    environment:
-      name: test
-    steps:
-      - name: Gate - Testing
-        run: echo "Testing gate passed"
-
   promote-to-staging:
-    needs: promote-to-test
+    needs: build-and-test
     runs-on: ubuntu-latest
     environment:
       name: staging
