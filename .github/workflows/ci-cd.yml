@@ -70,9 +70,11 @@ jobs:
         run: |
           mkdir -p pages
           rsync -a dist/prod/ pages/
-          mkdir -p pages/staging pages/test
+          mkdir -p pages/staging pages/test pages/production
           rsync -a dist/staging/ pages/staging/
           rsync -a dist/test/ pages/test/
+          # Also expose production explicitly under /production
+          rsync -a dist/prod/ pages/production/
           REPO_NAME="${{ github.event.repository.name }}"
           # Insert <base> tag into each index.html so relative navigation works reliably on Pages
           PROD_BASE="/${REPO_NAME}/"
@@ -109,6 +111,7 @@ jobs:
           cp pages/index.html pages/404.html || true
           if [[ -f pages/staging/index.html ]]; then cp pages/staging/index.html pages/staging/404.html; fi
           if [[ -f pages/test/index.html ]]; then cp pages/test/index.html pages/test/404.html; fi
+          if [[ -f pages/production/index.html ]]; then cp pages/production/index.html pages/production/404.html; fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
