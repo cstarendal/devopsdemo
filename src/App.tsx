@@ -63,11 +63,20 @@ function App() {
                 </div>
               )}
               {heartOn && (
-                <div role="img" aria-label="heart" style={{ color: greenSmiley ? '#10b981' : undefined }}>
-                  <span style={{ display: 'inline-block', lineHeight: 1 }}>
-                    ❤️
-                  </span>
-                </div>
+                <svg
+                  role="img"
+                  aria-label="heart"
+                  width="120"
+                  height="120"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ display: 'inline-block' }}
+                >
+                  <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.5h.56C12.09 5.01 13.76 4 15.5 4 18 4 20 6 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                    fill={greenSmiley ? '#10b981' : '#ef4444'}
+                  />
+                </svg>
               )}
             </div>
           )}
