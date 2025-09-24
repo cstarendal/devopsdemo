@@ -3,7 +3,6 @@ import './App.css'
 import { readFeatureFlag, writeFeatureFlag, getEnvLabel } from './flags'
 
 function App() {
-  const [isOn, setIsOn] = useState(false)
   const envName = getEnvLabel()
   const [newFeatureOn, setNewFeatureOn] = useState<boolean>(readFeatureFlag('newFeature'))
   const [smileyOn, setSmileyOn] = useState<boolean>(readFeatureFlag('smiley'))
@@ -30,9 +29,6 @@ function App() {
       <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
         <div style={{ textAlign: 'center', paddingTop: 80 }}>
           <h1>Hello World</h1>
-          <button onClick={() => setIsOn((v) => !v)}>
-            Toggle: {isOn ? 'ON' : 'OFF'}
-          </button>
           {/* New Feature area */}
           <div style={{ marginTop: 24 }}>
             <div style={{ fontSize: 18, marginBottom: 8 }}>
@@ -50,20 +46,16 @@ function App() {
           </div>
 
           {/* Smiley feature */}
-          <div style={{ marginTop: 24 }}>
-            <div style={{ fontSize: 18, marginBottom: 8 }}>
-              Smiley Feature: {smileyOn ? 'ON' : 'OFF'}
-            </div>
-            {canToggleFeatures ? (
+          {canToggleFeatures && (
+            <div style={{ marginTop: 24 }}>
+              <div style={{ fontSize: 18, marginBottom: 8 }}>
+                Smiley Feature: {smileyOn ? 'ON' : 'OFF'}
+              </div>
               <button onClick={handleToggleSmiley}>
                 {smileyOn ? 'Disable' : 'Enable'} smiley (prod only)
               </button>
-            ) : (
-              <div style={{ fontSize: 12, color: '#6b7280' }}>
-                In {envName}, new features are always ON
-              </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {smileyOn && (
             <div style={{ fontSize: 120, marginTop: 32 }} role="img" aria-label="smiley">
