@@ -1,4 +1,4 @@
-export type FeatureKey = 'newFeature';
+export type FeatureKey = 'newFeature' | 'smiley';
 
 const STORAGE_KEY_PREFIX = 'feature:';
 

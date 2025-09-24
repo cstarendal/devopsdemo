@@ -6,6 +6,7 @@ function App() {
   const [isOn, setIsOn] = useState(false)
   const envName = getEnvLabel()
   const [newFeatureOn, setNewFeatureOn] = useState<boolean>(readFeatureFlag('newFeature'))
+  const [smileyOn, setSmileyOn] = useState<boolean>(readFeatureFlag('smiley'))
 
   const canToggleFeatures = envName === 'Production'
 
@@ -13,6 +14,12 @@ function App() {
     const next = !newFeatureOn
     writeFeatureFlag('newFeature', next)
     setNewFeatureOn(next)
+  }
+
+  const handleToggleSmiley = () => {
+    const next = !smileyOn
+    writeFeatureFlag('smiley', next)
+    setSmileyOn(next)
   }
 
   return (
@@ -41,6 +48,30 @@ function App() {
               </div>
             )}
           </div>
+
+          {/* Smiley feature */}
+          <div style={{ marginTop: 24 }}>
+            <div style={{ fontSize: 18, marginBottom: 8 }}>
+              Smiley Feature: {smileyOn ? 'ON' : 'OFF'}
+            </div>
+            {canToggleFeatures ? (
+              <button onClick={handleToggleSmiley}>
+                {smileyOn ? 'Disable' : 'Enable'} smiley (prod only)
+              </button>
+            ) : (
+              <div style={{ fontSize: 12, color: '#6b7280' }}>
+                In {envName}, new features are always ON
+              </div>
+            )}
+          </div>
+
+          {smileyOn && (
+            <div style={{ fontSize: 120, marginTop: 32 }} role="img" aria-label="smiley">
+              <span style={{ display: 'inline-block', lineHeight: 1 }}>
+                😄
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
