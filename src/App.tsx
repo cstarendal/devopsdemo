@@ -25,15 +25,15 @@ function App() {
     setGreenSmiley(next)
   }
 
+  const bannerHeight = 80
   return (
     <div>
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, background: '#111827', color: '#f9fafb', padding: '16px 16px', fontSize: 28, fontWeight: 800, letterSpacing: 0.5, zIndex: 1000, textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, background: '#111827', color: '#f9fafb', padding: '0 16px', fontSize: 28, fontWeight: 800, letterSpacing: 0.5, zIndex: 1000, textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, height: bannerHeight }}>
         <span>Environment: {envName}</span>
         {canToggleFeatures && envName === 'Production' && (
           <button
             onClick={handleToggleAllFeatures}
             style={{
-              marginLeft: 16,
               fontSize: 14,
               fontWeight: 600,
               padding: '8px 12px',
@@ -72,7 +72,7 @@ function App() {
         )}
       </div>
       <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
-        <div style={{ textAlign: 'center', paddingTop: 80 }}>
+        <div style={{ textAlign: 'center', paddingTop: bannerHeight + 32 }}>
           <h1>Hello World</h1>
           {/* Feature controls moved to banner; no per-feature controls here */}
           <div data-testid="features-strip" style={{ height: 160, marginTop: 32, display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'center', fontSize: 120 }}>
