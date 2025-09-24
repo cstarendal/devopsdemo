@@ -29,7 +29,7 @@ function App() {
     <div>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, background: '#111827', color: '#f9fafb', padding: '16px 16px', fontSize: 28, fontWeight: 800, letterSpacing: 0.5, zIndex: 1000, textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
         <span>Environment: {envName}</span>
-        {canToggleFeatures && (
+        {canToggleFeatures && envName === 'Production' && (
           <button
             onClick={handleToggleAllFeatures}
             style={{
@@ -63,7 +63,7 @@ function App() {
                 </div>
               )}
               {heartOn && (
-                <div role="img" aria-label="heart">
+                <div role="img" aria-label="heart" style={{ color: greenSmiley ? '#10b981' : undefined }}>
                   <span style={{ display: 'inline-block', lineHeight: 1 }}>
                     ❤️
                   </span>
