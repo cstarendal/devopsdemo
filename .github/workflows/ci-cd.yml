@@ -68,6 +68,18 @@ jobs:
           rsync -a dist/staging/ pages/staging/
           rsync -a dist/test/ pages/test/
           REPO_NAME="${{ github.event.repository.name }}"
+          # Insert <base> tag into each index.html so relative navigation works reliably on Pages
+          PROD_BASE="/${REPO_NAME}/"
+          STAGING_BASE="/${REPO_NAME}/staging/"
+          TEST_BASE="/${REPO_NAME}/test/"
+          for target in pages pages/staging pages/test; do
+            if [[ -f "$target/index.html" ]]; then
+              BASE_VAR="$PROD_BASE"; [[ "$target" == "pages/staging" ]] && BASE_VAR="$STAGING_BASE"; [[ "$target" == "pages/test" ]] && BASE_VAR="$TEST_BASE";
+              # Insert <base> right after the opening <head>
+              tmpfile=$(mktemp)
+              awk -v base="$BASE_VAR" '{print} NR==1{next} /<head>/ && !done {print "    <base href=\"" base "\">"; done=1}1' "$target/index.html" > "$tmpfile" && mv "$tmpfile" "$target/index.html"
+            fi
+          done
           if [[ "${{ startsWith(github.ref, 'refs/tags/v') }}" == "true" ]]; then
             echo "Production default"
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
