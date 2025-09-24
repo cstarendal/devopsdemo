@@ -25,10 +25,17 @@ function App() {
   }
 
   const bannerHeight = 80
+  const version = import.meta.env.VITE_APP_VERSION?.slice(0, 7) ?? 'dev'
+  const deployStatus = import.meta.env.VITE_DEPLOY_STATUS ?? 'unknown'
+  const isDeployedOk = deployStatus.toLowerCase() === 'success'
   return (
     <div>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, background: '#111827', color: '#f9fafb', padding: '0 16px', fontSize: 28, fontWeight: 800, letterSpacing: 0.5, zIndex: 1000, textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, height: bannerHeight }}>
         <span>Environment: {envName}</span>
+        <span style={{ fontSize: 12, fontWeight: 600, padding: '6px 10px', background: '#334155', borderRadius: 999, marginLeft: 8 }}>v {version}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, padding: '6px 10px', borderRadius: 999, marginLeft: 8, color: '#111827', background: isDeployedOk ? '#22c55e' : '#f59e0b' }}>
+          {isDeployedOk ? 'Deployed' : 'Pending'}
+        </span>
         {canToggleFeatures && envName === 'Production' && (
           <button
             onClick={handleToggleAllFeatures}

@@ -48,6 +48,7 @@ jobs:
           export VITE_BASE_PATH="/${REPO_NAME}/"
           export VITE_ENV_NAME="Production"
           export VITE_APP_VERSION="${{ github.sha }}"
+          export VITE_DEPLOY_STATUS="pending"
           npm run build -- --outDir dist/prod
 
       - name: Build staging
@@ -56,6 +57,7 @@ jobs:
           export VITE_BASE_PATH="/${REPO_NAME}/staging/"
           export VITE_ENV_NAME="Staging"
           export VITE_APP_VERSION="${{ github.sha }}"
+          export VITE_DEPLOY_STATUS="pending"
           npm run build -- --outDir dist/staging
 
       # Keep testing step in pipeline, but do not publish a /test site
@@ -141,7 +143,33 @@ jobs:
       name: production
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Prepare artifact with deploy status success
+        run: |
+          mkdir -p pages
+          echo '{"status":"success"}' > pages/deploy-status.json
+      - name: Upload status artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: pages
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  cypress-smoke:
+    needs: promote-to-staging
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Derive staging URL
+        id: url
+        run: |
+          echo "url=https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/staging/" >> $GITHUB_OUTPUT
+      - name: Run Cypress smoke
+        run: npx cypress run --browser chrome --e2e --config baseUrl=${{ steps.url.outputs.url }} --env STAGING_URL=${{ steps.url.outputs.url }}
 
 
