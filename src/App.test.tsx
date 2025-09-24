@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
+import userEvent from '@testing-library/user-event'
 import App from './App'
+import { __setEnvOverride } from './flags'
 
 describe('Hello World Toggle App', () => {
   it('renders Hello World', async () => {
@@ -11,6 +13,26 @@ describe('Hello World Toggle App', () => {
   it('shows environment banner', async () => {
     render(<App />)
     expect(screen.getByText(/environment:/i)).toBeInTheDocument()
+  })
+
+  it('Staging shows heart by default (feature always ON)', async () => {
+    __setEnvOverride('Staging')
+    localStorage.clear()
+    render(<App />)
+    expect(screen.getByLabelText('heart')).toBeInTheDocument()
+  })
+
+  it('Production shows heart after enabling all features', async () => {
+    __setEnvOverride('Production')
+    localStorage.removeItem('feature:newFeature')
+    localStorage.removeItem('feature:smiley')
+    localStorage.removeItem('feature:heart')
+    render(<App />)
+    expect(screen.queryByLabelText('heart')).not.toBeInTheDocument()
+    const btn = screen.getByRole('button', { name: /enable all new features/i })
+    const user = userEvent.setup()
+    await user.click(btn)
+    expect(screen.getByLabelText('heart')).toBeInTheDocument()
   })
 })
 

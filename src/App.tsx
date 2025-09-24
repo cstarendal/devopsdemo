@@ -6,28 +6,20 @@ function App() {
   const envName = getEnvLabel()
   const [newFeatureOn, setNewFeatureOn] = useState<boolean>(readFeatureFlag('newFeature'))
   const [smileyOn, setSmileyOn] = useState<boolean>(readFeatureFlag('smiley'))
+  const [heartOn, setHeartOn] = useState<boolean>(readFeatureFlag('heart'))
 
   const canToggleFeatures = envName === 'Production'
 
-  const handleToggleFeature = () => {
-    const next = !newFeatureOn
-    writeFeatureFlag('newFeature', next)
-    setNewFeatureOn(next)
-  }
-
-  const handleToggleSmiley = () => {
-    const next = !smileyOn
-    writeFeatureFlag('smiley', next)
-    setSmileyOn(next)
-  }
 
   const handleToggleAllFeatures = () => {
-    const allOn = newFeatureOn && smileyOn
+    const allOn = newFeatureOn && smileyOn && heartOn
     const next = !allOn
     writeFeatureFlag('newFeature', next)
     writeFeatureFlag('smiley', next)
+    writeFeatureFlag('heart', next)
     setNewFeatureOn(next)
     setSmileyOn(next)
+    setHeartOn(next)
   }
 
   return (
@@ -58,11 +50,22 @@ function App() {
           <h1>Hello World</h1>
           {/* Feature controls moved to banner; no per-feature controls here */}
 
-          {smileyOn && (
-            <div style={{ fontSize: 120, marginTop: 32 }} role="img" aria-label="smiley">
-              <span style={{ display: 'inline-block', lineHeight: 1 }}>
-                😄
-              </span>
+          {(smileyOn || heartOn) && (
+            <div style={{ fontSize: 120, marginTop: 32, display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'center' }}>
+              {smileyOn && (
+                <div role="img" aria-label="smiley">
+                  <span style={{ display: 'inline-block', lineHeight: 1 }}>
+                    😄
+                  </span>
+                </div>
+              )}
+              {heartOn && (
+                <div role="img" aria-label="heart">
+                  <span style={{ display: 'inline-block', lineHeight: 1 }}>
+                    ❤️
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
