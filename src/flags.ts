@@ -1,4 +1,4 @@
-export type FeatureKey = 'newFeature' | 'smiley' | 'heart';
+export type FeatureKey = 'newFeature' | 'smiley' | 'heart' | 'greenSmiley';
 
 const STORAGE_KEY_PREFIX = 'feature:';
 let envOverride: string | null = null;

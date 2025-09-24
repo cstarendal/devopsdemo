@@ -7,19 +7,22 @@ function App() {
   const [newFeatureOn, setNewFeatureOn] = useState<boolean>(readFeatureFlag('newFeature'))
   const [smileyOn, setSmileyOn] = useState<boolean>(readFeatureFlag('smiley'))
   const [heartOn, setHeartOn] = useState<boolean>(readFeatureFlag('heart'))
+  const [greenSmiley, setGreenSmiley] = useState<boolean>(readFeatureFlag('greenSmiley'))
 
   const canToggleFeatures = envName === 'Production'
 
 
   const handleToggleAllFeatures = () => {
-    const allOn = newFeatureOn && smileyOn && heartOn
+    const allOn = newFeatureOn && smileyOn && heartOn && greenSmiley
     const next = !allOn
     writeFeatureFlag('newFeature', next)
     writeFeatureFlag('smiley', next)
     writeFeatureFlag('heart', next)
+    writeFeatureFlag('greenSmiley', next)
     setNewFeatureOn(next)
     setSmileyOn(next)
     setHeartOn(next)
+    setGreenSmiley(next)
   }
 
   return (
@@ -53,7 +56,7 @@ function App() {
           {(smileyOn || heartOn) && (
             <div style={{ fontSize: 120, marginTop: 32, display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'center' }}>
               {smileyOn && (
-                <div role="img" aria-label="smiley">
+                <div role="img" aria-label="smiley" style={{ color: greenSmiley ? '#10b981' : undefined }}>
                   <span style={{ display: 'inline-block', lineHeight: 1 }}>
                     😄
                   </span>
