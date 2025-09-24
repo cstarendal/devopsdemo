@@ -131,9 +131,19 @@ jobs:
       - name: Gate - Staging
         run: echo "Staging gate passed"
 
-  deploy:
+  await-production-approval:
     if: ${{ github.event_name == 'push' }}
     needs: promote-to-staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Await manual approval in environment
+        run: echo "If 'production' environment has required reviewers, this job will pause until approved."
+
+  deploy:
+    if: ${{ github.event_name == 'push' }}
+    needs: await-production-approval
     runs-on: ubuntu-latest
     environment:
       name: production
