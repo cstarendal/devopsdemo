@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload artifact
         if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: pages
 
@@ -148,7 +148,7 @@ jobs:
           mkdir -p pages
           echo '{"status":"success"}' > pages/deploy-status.json
       - name: Upload status artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: pages
       - id: deployment
