@@ -67,13 +67,9 @@ jobs:
           if [[ "${{ startsWith(github.ref, 'refs/tags/v') }}" == "true" ]]; then
             echo "Production default"
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            cat > pages/index.html <<'HTML'
-            <!doctype html><meta http-equiv="refresh" content="0; url=/staging/">
-            HTML
+            echo '<!doctype html><meta http-equiv="refresh" content="0; url=/staging/">' > pages/index.html
           else
-            cat > pages/index.html <<'HTML'
-            <!doctype html><meta http-equiv="refresh" content="0; url=/test/">
-            HTML
+            echo '<!doctype html><meta http-equiv="refresh" content="0; url=/test/">' > pages/index.html
           fi
 
       - name: Upload artifact
