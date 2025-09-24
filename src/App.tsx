@@ -71,8 +71,8 @@ function App() {
           </button>
         )}
       </div>
-      <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
-        <div style={{ paddingTop: bannerHeight + 32, width: '100%' }}>
+      <div style={{ display: 'grid', placeItems: 'center', minHeight: `calc(100vh - ${bannerHeight}px)`, paddingTop: bannerHeight }}>
+        <div style={{ width: '100%' }}>
           <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center' }}>
             <h1 style={{ margin: '0 0 16px 0' }}>Hello World</h1>
           {/* Feature controls moved to banner; no per-feature controls here */}
