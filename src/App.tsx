@@ -72,16 +72,26 @@ function App() {
         )}
       </div>
       <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
-        <div style={{ textAlign: 'center', paddingTop: bannerHeight + 32 }}>
-          <h1>Hello World</h1>
+        <div style={{ paddingTop: bannerHeight + 32, width: '100%' }}>
+          <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center' }}>
+            <h1 style={{ margin: '0 0 16px 0' }}>Hello World</h1>
           {/* Feature controls moved to banner; no per-feature controls here */}
-          <div data-testid="features-strip" style={{ height: 160, marginTop: 32, display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'center', fontSize: 120 }}>
+            <div data-testid="features-strip" style={{ height: 160, marginTop: 32, display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'center' }}>
             {smileyOn && (
-              <div role="img" aria-label="smiley" style={{ color: greenSmiley ? '#10b981' : undefined }}>
-                <span style={{ display: 'inline-block', lineHeight: 1 }}>
-                  😄
-                </span>
-              </div>
+                <div role="img" aria-label="smiley" style={{ color: greenSmiley ? '#10b981' : undefined }}>
+                  <svg
+                    width="120"
+                    height="120"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{ display: 'inline-block' }}
+                  >
+                    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.2" />
+                    <circle cx="9" cy="10" r="1.2" fill="currentColor" />
+                    <circle cx="15" cy="10" r="1.2" fill="currentColor" />
+                    <path d="M7.5 14c1.2 1.3 2.8 2 4.5 2s3.3-.7 4.5-2" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                  </svg>
+                </div>
             )}
             {heartOn && (
               <svg
@@ -99,6 +109,7 @@ function App() {
                 />
               </svg>
             )}
+            </div>
           </div>
         </div>
       </div>
