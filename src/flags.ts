@@ -1,6 +1,7 @@
 export type FeatureKey = 'newFeature' | 'smiley' | 'heart' | 'greenSmiley';
 
-const STORAGE_KEY_PREFIX = 'feature:';
+const VERSION = import.meta.env.VITE_APP_VERSION ?? 'dev';
+const STORAGE_KEY_PREFIX = `feature:${VERSION}:`;
 let envOverride: string | null = null;
 
 function getEnvName(): string {
@@ -32,5 +33,15 @@ export function getEnvLabel(): string {
 // Test helpers
 export function __setEnvOverride(name: string | null) {
   envOverride = name;
+}
+
+export function resetOverridesForCurrentVersion(): void {
+  const keys: string[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i)
+    if (!k) continue
+    if (k.startsWith(STORAGE_KEY_PREFIX)) keys.push(k)
+  }
+  keys.forEach((k) => localStorage.removeItem(k))
 }
 

@@ -44,6 +44,8 @@ describe('Hello World Toggle App', () => {
     expect(smiley).toBeInTheDocument()
     // style attribute contains color: rgb(16, 185, 129) for #10b981 or the hex itself
     expect(smiley).toHaveStyle({ color: '#10b981' })
+    const strip = screen.getByTestId('features-strip')
+    expect(strip).toHaveStyle({ height: '160px' })
   })
 
   it('Production renders green smiley only after enabling all features', async () => {
