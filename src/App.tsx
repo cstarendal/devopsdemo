@@ -1,9 +1,19 @@
 import { useState } from 'react'
 import './App.css'
+import { readFeatureFlag, writeFeatureFlag, getEnvLabel } from './flags'
 
 function App() {
   const [isOn, setIsOn] = useState(false)
-  const envName = import.meta.env.VITE_ENV_NAME ?? 'Local'
+  const envName = getEnvLabel()
+  const [newFeatureOn, setNewFeatureOn] = useState<boolean>(readFeatureFlag('newFeature'))
+
+  const canToggleFeatures = envName === 'Production'
+
+  const handleToggleFeature = () => {
+    const next = !newFeatureOn
+    writeFeatureFlag('newFeature', next)
+    setNewFeatureOn(next)
+  }
 
   return (
     <div>
@@ -16,6 +26,21 @@ function App() {
           <button onClick={() => setIsOn((v) => !v)}>
             Toggle: {isOn ? 'ON' : 'OFF'}
           </button>
+          {/* New Feature area */}
+          <div style={{ marginTop: 24 }}>
+            <div style={{ fontSize: 18, marginBottom: 8 }}>
+              New Feature: {newFeatureOn ? 'ON' : 'OFF'}
+            </div>
+            {canToggleFeatures ? (
+              <button onClick={handleToggleFeature}>
+                {newFeatureOn ? 'Disable' : 'Enable'} new features (prod only)
+              </button>
+            ) : (
+              <div style={{ fontSize: 12, color: '#6b7280' }}>
+                In {envName}, new features are always ON
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
