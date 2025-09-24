@@ -75,6 +75,11 @@ jobs:
           else
             echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/test/\">" > pages/index.html
           fi
+          # Ensure GitHub Pages doesn't run Jekyll and SPA fallback works
+          touch pages/.nojekyll
+          cp pages/index.html pages/404.html || true
+          if [[ -f pages/staging/index.html ]]; then cp pages/staging/index.html pages/staging/404.html; fi
+          if [[ -f pages/test/index.html ]]; then cp pages/test/index.html pages/test/404.html; fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
