@@ -21,37 +21,42 @@ function App() {
     setSmileyOn(next)
   }
 
+  const handleToggleAllFeatures = () => {
+    const allOn = newFeatureOn && smileyOn
+    const next = !allOn
+    writeFeatureFlag('newFeature', next)
+    writeFeatureFlag('smiley', next)
+    setNewFeatureOn(next)
+    setSmileyOn(next)
+  }
+
   return (
     <div>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, background: '#111827', color: '#f9fafb', padding: '16px 16px', fontSize: 28, fontWeight: 800, letterSpacing: 0.5, zIndex: 1000, textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-        Environment: {envName}
+        <span>Environment: {envName}</span>
+        {canToggleFeatures && (
+          <button
+            onClick={handleToggleAllFeatures}
+            style={{
+              marginLeft: 16,
+              fontSize: 14,
+              fontWeight: 600,
+              padding: '8px 12px',
+              background: '#f59e0b',
+              color: '#111827',
+              border: 'none',
+              borderRadius: 6,
+              cursor: 'pointer'
+            }}
+          >
+            {newFeatureOn && smileyOn ? 'Disable all new features' : 'Enable all new features'}
+          </button>
+        )}
       </div>
       <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
         <div style={{ textAlign: 'center', paddingTop: 80 }}>
           <h1>Hello World</h1>
-          {/* New Feature area (Production only UI) */}
-          {canToggleFeatures && (
-            <div style={{ marginTop: 24 }}>
-              <div style={{ fontSize: 18, marginBottom: 8 }}>
-                New Feature: {newFeatureOn ? 'ON' : 'OFF'}
-              </div>
-              <button onClick={handleToggleFeature}>
-                {newFeatureOn ? 'Disable' : 'Enable'} new features (prod only)
-              </button>
-            </div>
-          )}
-
-          {/* Smiley feature */}
-          {canToggleFeatures && (
-            <div style={{ marginTop: 24 }}>
-              <div style={{ fontSize: 18, marginBottom: 8 }}>
-                Smiley Feature: {smileyOn ? 'ON' : 'OFF'}
-              </div>
-              <button onClick={handleToggleSmiley}>
-                {smileyOn ? 'Disable' : 'Enable'} smiley (prod only)
-              </button>
-            </div>
-          )}
+          {/* Feature controls moved to banner; no per-feature controls here */}
 
           {smileyOn && (
             <div style={{ fontSize: 120, marginTop: 32 }} role="img" aria-label="smiley">
