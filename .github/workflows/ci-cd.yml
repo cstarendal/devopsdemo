@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-test:
+  integrate-and-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,15 +35,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Unit tests
-        run: npm run test:run
 
       - name: Build production
         run: |
@@ -97,8 +88,33 @@ jobs:
         with:
           path: pages
 
+  run-testing:
+    needs: integrate-and-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test:run
+
   promote-to-staging:
-    needs: build-and-test
+    needs: run-testing
     runs-on: ubuntu-latest
     environment:
       name: staging
