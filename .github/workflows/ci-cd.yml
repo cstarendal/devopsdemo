@@ -44,17 +44,20 @@ jobs:
 
       - name: Build production
         run: |
-          export VITE_BASE_PATH=/
+          REPO_NAME="${{ github.event.repository.name }}"
+          export VITE_BASE_PATH="/${REPO_NAME}/"
           npm run build -- --outDir dist/prod
 
       - name: Build staging
         run: |
-          export VITE_BASE_PATH=/staging/
+          REPO_NAME="${{ github.event.repository.name }}"
+          export VITE_BASE_PATH="/${REPO_NAME}/staging/"
           npm run build -- --outDir dist/staging
 
       - name: Build test
         run: |
-          export VITE_BASE_PATH=/test/
+          REPO_NAME="${{ github.event.repository.name }}"
+          export VITE_BASE_PATH="/${REPO_NAME}/test/"
           npm run build -- --outDir dist/test
 
       - name: Compose Pages artifact
@@ -64,12 +67,13 @@ jobs:
           mkdir -p pages/staging pages/test
           rsync -a dist/staging/ pages/staging/
           rsync -a dist/test/ pages/test/
+          REPO_NAME="${{ github.event.repository.name }}"
           if [[ "${{ startsWith(github.ref, 'refs/tags/v') }}" == "true" ]]; then
             echo "Production default"
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo '<!doctype html><meta http-equiv="refresh" content="0; url=/staging/">' > pages/index.html
+            echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/staging/\">" > pages/index.html
           else
-            echo '<!doctype html><meta http-equiv="refresh" content="0; url=/test/">' > pages/index.html
+            echo "<!doctype html><meta http-equiv=\"refresh\" content=\"0; url=/${REPO_NAME}/test/\">" > pages/index.html
           fi
 
       - name: Upload artifact
