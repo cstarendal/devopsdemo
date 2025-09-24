@@ -1,4 +1,4 @@
-export type FeatureKey = 'newFeature' | 'smiley' | 'heart' | 'greenSmiley';
+export type FeatureKey = 'newFeature' | 'smiley' | 'heart' | 'greenSmiley' | 'toggleButton';
 
 const VERSION = import.meta.env.VITE_APP_VERSION ?? 'dev';
 const STORAGE_KEY_PREFIX = `feature:${VERSION}:`;

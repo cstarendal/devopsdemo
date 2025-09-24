@@ -60,6 +60,28 @@ describe('Hello World Toggle App', () => {
     const post = screen.getByLabelText('smiley')
     expect(post).toBeInTheDocument()
   })
+
+  it('Staging shows a feature-flagged toggle button next to heart and it toggles', async () => {
+    __setEnvOverride('Staging')
+    localStorage.clear()
+    render(<App />)
+    const btn = screen.getByRole('button', { name: /toggle: off/i })
+    expect(btn).toBeInTheDocument()
+    const user = userEvent.setup()
+    await user.click(btn)
+    expect(screen.getByRole('button', { name: /toggle: on/i })).toBeInTheDocument()
+  })
+
+  it('Production shows the toggle button only after enabling all features', async () => {
+    __setEnvOverride('Production')
+    localStorage.clear()
+    render(<App />)
+    expect(screen.queryByRole('button', { name: /toggle:/i })).not.toBeInTheDocument()
+    const enabler = screen.getByRole('button', { name: /enable all new features/i })
+    const user = userEvent.setup()
+    await user.click(enabler)
+    expect(screen.getByRole('button', { name: /toggle: off/i })).toBeInTheDocument()
+  })
 })
 
 

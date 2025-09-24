@@ -8,6 +8,8 @@ function App() {
   const [smileyOn, setSmileyOn] = useState<boolean>(readFeatureFlag('smiley'))
   const [heartOn, setHeartOn] = useState<boolean>(readFeatureFlag('heart'))
   const [greenSmiley, setGreenSmiley] = useState<boolean>(readFeatureFlag('greenSmiley'))
+  const [toggleOn, setToggleOn] = useState<boolean>(false)
+  const [showToggle, setShowToggle] = useState<boolean>(readFeatureFlag('toggleButton'))
 
   const canToggleFeatures = envName === 'Production'
 
@@ -18,10 +20,12 @@ function App() {
     writeFeatureFlag('smiley', next)
     writeFeatureFlag('heart', next)
     writeFeatureFlag('greenSmiley', next)
+    writeFeatureFlag('toggleButton', next)
     setNewFeatureOn(next)
     setSmileyOn(next)
     setHeartOn(next)
     setGreenSmiley(next)
+    setShowToggle(next)
   }
 
   const bannerHeight = 80
@@ -91,6 +95,11 @@ function App() {
                   fill="#ef4444"
                 />
               </svg>
+            )}
+            {showToggle && (
+              <button onClick={() => setToggleOn((v) => !v)}>
+                Toggle: {toggleOn ? 'ON' : 'OFF'}
+              </button>
             )}
           </div>
         </div>
