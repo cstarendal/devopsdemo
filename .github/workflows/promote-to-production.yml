@@ -1,0 +1,64 @@
+name: promote-to-production
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref (sha or branch) to promote'
+        required: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production
+        run: |
+          REPO_NAME="${{ github.event.repository.name }}"
+          export VITE_BASE_PATH="/${REPO_NAME}/"
+          export VITE_ENV_NAME="Production"
+          npm run build -- --outDir dist/prod
+
+      - name: Compose Pages artifact (production only)
+        run: |
+          mkdir -p pages
+          rsync -a dist/prod/ pages/
+          REPO_NAME="${{ github.event.repository.name }}"
+          PROD_BASE="/${REPO_NAME}/"
+          if [[ -f pages/index.html ]]; then \
+            tmpfile=$(mktemp); \
+            awk -v base="$PROD_BASE" '{print} NR==1{next} /<head>/ && !done {print "    <base href=\"" base "\">"; done=1}1' pages/index.html > "$tmpfile" && mv "$tmpfile" pages/index.html; \
+          fi
+          touch pages/.nojekyll
+          cp pages/index.html pages/404.html || true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: pages
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+
